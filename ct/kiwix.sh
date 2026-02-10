@@ -12,6 +12,10 @@ source <(curl -fsSL https://raw.githubusercontent.com/community-scripts/ProxmoxV
 # Users can customize these during installation via the interactive prompts.
 # ============================================================================
 
+export LC_ALL=C  # Disable Perl locale warnings.
+export DEBIAN_FRONTEND=noninteractive
+export DISABLE_LOCALE="y"
+
 APP="Kiwix"
 var_tags="${var_tags:-documentation;offline}"  # Max 2 tags, semicolon-separated
 var_cpu="${var_cpu:-1}"                        # CPU cores: 1-4 typical
