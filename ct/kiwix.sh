@@ -102,7 +102,7 @@ echo -e "${BL}  ${APP} ZIM Archive Configuration${CL}"
 echo -e "${BL}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${CL}\n"
 echo -e "${YW}Kiwix requires a directory containing ZIM archive files.${CL}"
 echo -e "${YW}This directory will be bind-mounted to ${BGN}/data${CL}${YW} in the container.${CL}\n"
-echo -e "${CY}Download ZIM archives from:${CL}"
+echo -e "${GN}Download ZIM archives from:${CL}"
 echo -e "  ${GN}• https://library.kiwix.org${CL}"
 echo -e "  ${GN}• https://download.kiwix.org/zim/${CL}\n"
 
