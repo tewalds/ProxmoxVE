@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 source <(curl -fsSL https://raw.githubusercontent.com/community-scripts/ProxmoxVE/main/misc/build.func)
 # Copyright (c) 2021-2026 community-scripts ORG
-# Author: [YourGitHubUsername]
+# Author: tewalds
 # License: MIT | https://github.com/community-scripts/ProxmoxVE/raw/main/LICENSE
 # Source: https://github.com/kiwix/kiwix-tools
 
@@ -22,7 +22,7 @@ var_version="${var_version:-12}"               # OS Version: 13 (Debian), 24.04 
 var_unprivileged="${var_unprivileged:-1}"      # 1=unprivileged (secure), 0=privileged (for Docker/Podman)
 
 # ============================================================================
-# INITIALIZATION - These are required in all CT scripts
+# INITIALIZATION
 # ============================================================================
 header_info "$APP" # Display app name and setup header
 variables          # Initialize build.func variables
@@ -30,20 +30,7 @@ color              # Load color variables for output
 catch_errors       # Enable error handling with automatic exit on failure
 
 # ============================================================================
-# UPDATE SCRIPT - Called when user selects "Update" from web interface
-# ============================================================================
-# This function is triggered by the web interface to update the application.
-# It should:
-#   1. Check if installation exists
-#   2. Check for new GitHub releases
-#   3. Stop running services
-#   4. Backup critical data
-#   5. Deploy new version
-#   6. Run post-update commands (migrations, config updates, etc.)
-#   7. Restore data if needed
-#   8. Start services
-#
-# Exit with `exit` at the end to prevent container restart.
+# UPDATE SCRIPT
 # ============================================================================
 
 function update_script() {
@@ -91,72 +78,6 @@ function update_script() {
 }
 
 # ============================================================================
-# ADVANCED SETTINGS - Custom configuration prompts
-# ============================================================================
-# This function is called during the "Advanced Settings" dialog.
-# It allows users to configure app-specific settings before container creation.
-# Alternative: Pass ZIM_DIR as environment variable or first argument to skip prompt.
-# Example: ZIM_DIR=/mnt/zim bash -c "$(wget -qLO - https://github.com/.../kiwix.sh)"
-# ============================================================================
-
-function advanced_settings() {
-  # Check if ZIM_DIR already set (via environment or command line)
-  if [ -n "$ZIM_DIR" ] && [ -d "$ZIM_DIR" ]; then
-    echo -e "${GN}[✓] Using ZIM directory from environment: ${ZIM_DIR}${CL}"
-    return 0
-  fi
-
-  # Display information about ZIM archives
-  echo -e "\n${BL}--- ${APP} ZIM Archive Configuration ---${CL}"
-  echo -e "${YW}Kiwix requires ZIM archives to serve offline content.${CL}"
-  echo -e "${YW}The directory you specify will be bind-mounted to /data in the container.${CL}"
-  echo -e ""
-  echo -e "${GN}Download ZIM archives from: https://library.kiwix.org${CL}"
-  echo -e "${GN}Wikipedia mirrors: https://github.com/pirate/wikipedia-mirror${CL}"
-  echo -e ""
-
-  # Prompt for ZIM directory
-  while true; do
-    read -p "Enter the path to your ZIM archives directory: " ZIM_DIR
-
-    # Validate directory exists
-    if [ ! -d "$ZIM_DIR" ]; then
-      echo -e "${RD}[!] Error: Directory '$ZIM_DIR' not found.${CL}"
-      read -p "Try again? (y/n): " -n 1 -r
-      echo
-      if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-        exit 1
-      fi
-      continue
-    fi
-
-    # Check for .zim files (warning only)
-    if ! ls "${ZIM_DIR}"/*.zim >/dev/null 2>&1; then
-      echo -e "${YW}[!] Warning: No .zim files found in '$ZIM_DIR'.${CL}"
-      echo -e "${YW}    You can add them later and restart the service.${CL}"
-      read -p "Continue with this directory? (y/n): " -n 1 -r
-      echo
-      if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-        continue
-      fi
-    fi
-
-    # Directory is valid
-    echo -e "${GN}[✓] Using directory: ${ZIM_DIR}${CL}"
-    break
-  done
-
-  # Export for use in post-creation steps
-  export ZIM_DIR
-}
-
-# Allow command-line argument override
-if [ -n "$1" ]; then
-  ZIM_DIR="$1"
-  export ZIM_DIR
-fi
-
-# ============================================================================
 # MAIN EXECUTION - Container creation flow
 # ============================================================================
 # These are called by build.func and handle the full installation process:
@@ -169,16 +90,64 @@ start
 build_container
 
 # ============================================================================
-# POST-CREATION CONFIGURATION
-# ============================================================================
-# Configure bind mount and start service
+# POST-CREATION: ZIM DIRECTORY CONFIGURATION
 # ============================================================================
 
-# Ensure ZIM_DIR was set (either from advanced_settings or environment variable)
-if [ -z "$ZIM_DIR" ]; then
-  msg_error "ZIM_DIR not configured. This should not happen."
-  exit 1
+echo -e "\n${BL}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${CL}"
+echo -e "${BL}  ${APP} ZIM Archive Configuration${CL}"
+echo -e "${BL}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${CL}\n"
+echo -e "${YW}Kiwix requires a directory containing ZIM archive files.${CL}"
+echo -e "${YW}This directory will be bind-mounted to ${BGN}/data${CL}${YW} in the container.${CL}\n"
+echo -e "${CY}Download ZIM archives from:${CL}"
+echo -e "  ${GN}• https://library.kiwix.org${CL}"
+echo -e "  ${GN}• https://download.kiwix.org/zim/${CL}\n"
+
+# Allow environment variable override (for automation)
+if [ -z "${ZIM_DIR:-}" ]; then
+  while true; do
+    read -p "Enter the full path to your ZIM archives directory: " ZIM_DIR
+
+    # Trim whitespace
+    ZIM_DIR=$(echo "$ZIM_DIR" | xargs)
+
+    if [ -z "$ZIM_DIR" ]; then
+      echo -e "${RD}[!] Path cannot be empty.${CL}\n"
+      continue
+    fi
+
+    if [ ! -d "$ZIM_DIR" ]; then
+      echo -e "${RD}[!] Error: Directory '$ZIM_DIR' does not exist.${CL}"
+      read -p "Try again? (y/n): " -n 1 -r
+      echo
+      if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+        msg_error "ZIM directory required for Kiwix"
+        exit 1
+      fi
+      continue
+    fi
+
+    # Check for .zim files (warning only, not blocking)
+    if ! ls "${ZIM_DIR}"/*.zim >/dev/null 2>&1; then
+      echo -e "\n${YW}[!] Warning: No .zim files found in '$ZIM_DIR'${CL}"
+      echo -e "${YW}    Kiwix will not serve any content until you add .zim files.${CL}"
+      echo -e "${YW}    You can add them later and restart the service.${CL}\n"
+      read -p "Continue with this directory? (y/n): " -n 1 -r
+      echo
+      if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+        continue
+      fi
+    fi
+
+    echo -e "\n${GN}[✓] Using directory: ${ZIM_DIR}${CL}\n"
+    break
+  done
+else
+  echo -e "${GN}[✓] Using ZIM_DIR from environment: ${ZIM_DIR}${CL}\n"
 fi
+
+# ============================================================================
+# CONFIGURE BIND MOUNT
+# ============================================================================
 
 msg_info "Configuring Bind Mount to ${ZIM_DIR}"
 # Note: ro=1 is omitted as it can cause 'Status 9' mount errors
@@ -186,26 +155,24 @@ msg_info "Configuring Bind Mount to ${ZIM_DIR}"
 pct set $CTID -mp0 "$ZIM_DIR,mp=/data"
 msg_ok "Directory ${ZIM_DIR} mounted to /data"
 
-msg_info "Setting CPU Priority"
+msg_info "Setting Container Options"
 pct set $CTID -cpuunits 512
-msg_ok "Set CPU Priority"
-
-msg_info "Enabling Auto-start"
 pct set $CTID --onboot 1
-msg_ok "Enabled Auto-start"
+msg_ok "Container Options Set"
 
-# Get container IP for display
+# ============================================================================
+# COMPLETION
+# ============================================================================
+
 IP=$(pct exec $CTID -- hostname -I | awk '{print $1}')
 
-# ============================================================================
-# COMPLETION MESSAGE
-# ============================================================================
 msg_ok "Completed successfully!\n"
-echo -e "${CREATING}${GN}${APP} setup has been successfully initialized!${CL}"
-echo -e "${INFO}${YW} Access it using the following URL:${CL}"
-echo -e "${TAB}${GATEWAY}${BGN}http://${IP}:8080${CL}"
-echo -e ""
-echo -e "${INFO}${YW} Additional Information:${CL}"
-echo -e "${TAB}${INFO} CTID: ${GN}${CTID}${CL}"
-echo -e "${TAB}${INFO} Storage: Bind-mounted from ${ZIM_DIR}${CL}"
-echo -e "${TAB}${INFO} Add .zim files to ${ZIM_DIR} and restart the service${CL}"
+echo -e "${BL}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${CL}"
+echo -e "${GN}  ${APP} Setup Complete!${CL}"
+echo -e "${BL}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${CL}\n"
+echo -e "${TAB}${GATEWAY}${BGN}Web Interface:${CL} ${BL}http://${IP}:8080${CL}"
+echo -e "${TAB}${INFO}${BGN}Container ID:${CL} ${GN}${CTID}${CL}"
+echo -e "${TAB}${INFO}${BGN}ZIM Directory:${CL} ${ZIM_DIR} ${DGN}→${CL} ${BGN}/data${CL}"
+echo -e "\n${TAB}${CY}To add more .zim files:${CL}"
+echo -e "${TAB}  1. Copy them to ${YW}${ZIM_DIR}${CL}"
+echo -e "${TAB}  2. Restart service: ${YW}pct exec ${CTID} -- systemctl restart kiwix-serve${CL}\n"
