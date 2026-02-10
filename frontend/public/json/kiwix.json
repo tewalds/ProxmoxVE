@@ -1,0 +1,13 @@
+{
+  "name": "Kiwix",
+  "description": "Kiwix allows you to enjoy a whole world of knowledge offline (Wikipedia, Gutenberg, Stack Exchange, etc).",
+  "categories": ["utilities", "network"],
+  "tags": "wiki, offline, education",
+  "cpu": 1,
+  "ram": 512,
+  "disk": 4,
+  "os": "debian",
+  "version": "12",
+  "unprivileged": 1,
+  "type": "lcx"
+}
