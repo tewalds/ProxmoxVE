@@ -1,13 +1,31 @@
 {
   "name": "Kiwix",
-  "description": "Kiwix allows you to enjoy a whole world of knowledge offline (Wikipedia, Gutenberg, Stack Exchange, etc).",
-  "categories": ["utilities", "network"],
-  "tags": "wiki, offline, education",
-  "cpu": 1,
-  "ram": 512,
-  "disk": 4,
-  "os": "debian",
-  "version": "12",
-  "unprivileged": 1,
-  "type": "lcx"
+  "slug": "kiwix",
+  "categories": [
+    "Documentation",
+    "Media"
+  ],
+  "date_created": "2026-02-10",
+  "type": "ct",
+  "updateable": true,
+  "privileged": false,
+  "interface_port": 8080,
+  "documentation": "https://wiki.kiwix.org",
+  "website": "https://www.kiwix.org",
+  "logo": "https://raw.githubusercontent.com/kiwix/kiwix-tools/main/icon/kiwix-icon.svg",
+  "description": "Kiwix enables you to access offline content from Wikipedia, Project Gutenberg, Stack Exchange, and more. Perfect for education, research, or areas with limited internet connectivity. Requires ZIM archive files.",
+  "install_methods": [
+    {
+      "type": "default",
+      "script": "ct/kiwix.sh"
+    }
+  ],
+  "default_credentials": {
+    "username": "-",
+    "password": "-"
+  },
+  "notes": {
+    "title": "Setup Requirements",
+    "content": "This container requires a bind-mounted directory containing ZIM archive files. You will be prompted for the path during installation. Download ZIM archives from https://library.kiwix.org or https://download.kiwix.org/zim/"
+  }
 }
