@@ -5,16 +5,16 @@ source <(curl -fsSL https://raw.githubusercontent.com/community-scripts/ProxmoxV
 # License: MIT | https://github.com/community-scripts/ProxmoxVE/raw/main/LICENSE
 # Source: https://github.com/kiwix/kiwix-tools
 
+export LC_ALL=C  # Disable Perl locale warnings.
+export DEBIAN_FRONTEND=noninteractive
+export DISABLE_LOCALE="y"
+
 # ============================================================================
 # APP CONFIGURATION
 # ============================================================================
 # These values are sent to build.func and define default container resources.
 # Users can customize these during installation via the interactive prompts.
 # ============================================================================
-
-export LC_ALL=C  # Disable Perl locale warnings.
-export DEBIAN_FRONTEND=noninteractive
-export DISABLE_LOCALE="y"
 
 APP="Kiwix"
 var_tags="${var_tags:-documentation;offline}"  # Max 2 tags, semicolon-separated
@@ -102,7 +102,7 @@ echo -e "${BL}  ${APP} ZIM Archive Configuration${CL}"
 echo -e "${BL}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${CL}\n"
 echo -e "${YW}Kiwix requires a directory containing ZIM archive files.${CL}"
 echo -e "${YW}This directory will be bind-mounted to ${BGN}/data${CL}${YW} in the container.${CL}\n"
-echo -e "${GN}Download ZIM archives from:${CL}"
+echo -e "${BL}Download ZIM archives from:${CL}"
 echo -e "  ${GN}• https://library.kiwix.org${CL}"
 echo -e "  ${GN}• https://download.kiwix.org/zim/${CL}\n"
 
@@ -153,11 +153,23 @@ fi
 # CONFIGURE BIND MOUNT
 # ============================================================================
 
-msg_info "Configuring Bind Mount to ${ZIM_DIR}"
-# Note: ro=1 is omitted as it can cause 'Status 9' mount errors
-# on certain Btrfs/ZFS configurations with unprivileged containers.
-pct set $CTID -mp0 "$ZIM_DIR,mp=/data"
-msg_ok "Directory ${ZIM_DIR} mounted to /data"
+msg_info "Configuring Bind Mount"
+
+# Try to enable idmapped mounts if supported (Proxmox 9.1+)
+# This prevents ownership changes and allows ro=1 to work properly
+if pct set $CTID -features mountidmap=1 2>/dev/null; then
+  msg_info "Enabled ID-mapped mounts (ownership preserved)"
+  # With idmapped mounts, we can safely use ro=1
+  pct set $CTID -mp0 "$ZIM_DIR,mp=/data,ro=1"
+  msg_ok "Bind Mount Configured (read-only, ownership preserved)"
+else
+  msg_info "ID-mapped mounts not available, using standard mount"
+  msg_info "Note: Files will appear as nobody:nogroup inside container"
+  msg_info "Ensure ZIM files are world-readable (chmod -R a+rX)"
+  # Standard mount without ro=1 (ro=1 causes issues without idmapped mounts)
+  pct set $CTID -mp0 "$ZIM_DIR,mp=/data"
+  msg_ok "Bind Mount Configured (read-write mount, read-only service)"
+fi
 
 msg_info "Setting Container Options"
 pct set $CTID -cpuunits 512
@@ -177,6 +189,10 @@ echo -e "${BL}━━━━━━━━━━━━━━━━━━━━━━
 echo -e "${TAB}${GATEWAY}${BGN}Web Interface:${CL} ${BL}http://${IP}:8080${CL}"
 echo -e "${TAB}${INFO}${BGN}Container ID:${CL} ${GN}${CTID}${CL}"
 echo -e "${TAB}${INFO}${BGN}ZIM Directory:${CL} ${ZIM_DIR} ${DGN}→${CL} ${BGN}/data${CL}"
-echo -e "\n${TAB}${CY}To add more .zim files:${CL}"
+echo -e "\n${TAB}${BL}To add more .zim files:${CL}"
 echo -e "${TAB}  1. Copy them to ${YW}${ZIM_DIR}${CL}"
-echo -e "${TAB}  2. Restart service: ${YW}pct exec ${CTID} -- systemctl restart kiwix-serve${CL}\n"
+echo -e "${TAB}  2. Restart service: ${YW}pct exec ${CTID} -- systemctl restart kiwix-serve${CL}"
+echo -e "\n${TAB}${YW}Note on file ownership:${CL}"
+echo -e "${TAB}  Files in ${YW}${ZIM_DIR}${CL} should be world-readable."
+echo -e "${TAB}  Run on host: ${YW}chmod -R a+rX ${ZIM_DIR}${CL}"
+echo -e "${TAB}  Inside container, files appear as ${YW}nobody:nogroup${CL} (this is normal)\n"
