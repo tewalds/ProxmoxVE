@@ -9,10 +9,6 @@ export LC_ALL=C  # Disable Perl locale warnings.
 export DEBIAN_FRONTEND=noninteractive
 export DISABLE_LOCALE="y"
 
-echo "============================================================================="
-echo "Running kiwix-install.sh"
-echo "============================================================================="
-
 source /dev/stdin <<<"$FUNCTIONS_FILE_PATH"
 color
 verb_ip6

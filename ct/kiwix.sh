@@ -104,7 +104,6 @@ function update_script() {
 
 start
 build_container
-description
 
 # ============================================================================
 # POST-CREATION: ZIM DIRECTORY CONFIGURATION
