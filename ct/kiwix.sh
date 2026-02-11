@@ -104,6 +104,7 @@ function update_script() {
 
 start
 build_container
+description
 
 # ============================================================================
 # POST-CREATION: ZIM DIRECTORY CONFIGURATION
@@ -192,8 +193,7 @@ msg_ok "Container Options Set"
 # COMPLETION
 # ============================================================================
 
-# IP=$(pct exec $CTID -- hostname -I | awk '{print $1}')
-# get_lxc_ip
+IP=$(pct exec $CTID -- hostname -I | awk '{print $1}')
 
 msg_ok "Completed successfully!\n"
 echo -e "${BL}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${CL}"
