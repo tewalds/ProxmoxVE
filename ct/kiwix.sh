@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-source <(curl -fsSL https://raw.githubusercontent.com/community-scripts/ProxmoxVE/main/misc/build.func)
+#source <(curl -fsSL https://raw.githubusercontent.com/community-scripts/ProxmoxVE/main/misc/build.func)
+source <(curl -fsSL https://raw.githubusercontent.com/tewalds/ProxmoxVE/feature/kiwix/misc/build.func)
 # Copyright (c) 2021-2026 community-scripts ORG
 # Author: tewalds
 # License: MIT | https://github.com/community-scripts/ProxmoxVE/raw/main/LICENSE
@@ -52,7 +53,7 @@ function update_script() {
   # Detect architecture
   ARCH=$(dpkg --print-architecture)
   case "$ARCH" in
-    i386)  KIWIX_ARCH="i586"  ;;
+    i386)  KIWIX_ARCH="i586" ;;
     amd64) KIWIX_ARCH="x86_64" ;;
     arm64) KIWIX_ARCH="aarch64" ;;
     *) msg_error "Unsupported architecture: $ARCH"; exit 1 ;;
