@@ -192,14 +192,14 @@ msg_ok "Container Options Set"
 # COMPLETION
 # ============================================================================
 
-#IP=$(pct exec $CTID -- hostname -I | awk '{print $1}')
-get_lxc_ip
+# IP=$(pct exec $CTID -- hostname -I | awk '{print $1}')
+# get_lxc_ip
 
 msg_ok "Completed successfully!\n"
 echo -e "${BL}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${CL}"
 echo -e "${GN}  ${APP} Setup Complete!${CL}"
 echo -e "${BL}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${CL}\n"
-echo -e "${TAB}${GATEWAY}${BGN}Web Interface:${CL} ${BL}http://${LOCAL_IP}:8080${CL}"
+echo -e "${TAB}${GATEWAY}${BGN}Web Interface:${CL} ${BL}http://${IP}:8080${CL}"
 echo -e "${TAB}${INFO}${BGN}Container ID:${CL} ${GN}${CTID}${CL}"
 echo -e "${TAB}${INFO}${BGN}ZIM Directory:${CL} ${ZIM_DIR} ${DGN}→${CL} ${BGN}/data${CL}"
 echo -e "\n${TAB}${BL}To add more .zim files:${CL}"

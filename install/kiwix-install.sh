@@ -2,7 +2,7 @@
 
 # Copyright (c) 2021-2026 community-scripts ORG
 # Author: tewalds
-# License: MIT | https://github.com/community-scripts/ProxmoxVE/raw/main/LICENSE
+# License: MIT | https://github.com/tewalds/ProxmoxVE/raw/main/LICENSE
 # Source: https://github.com/kiwix/kiwix-tools
 
 export LC_ALL=C  # Disable Perl locale warnings.
@@ -44,7 +44,7 @@ msg_info "Downloading Kiwix-Tools"
 # Detect architecture
 ARCH=$(dpkg --print-architecture)
 case "$ARCH" in
-  i386)  KIWIX_ARCH="i586"  ;;
+  i386)  KIWIX_ARCH="i586" ;;
   amd64) KIWIX_ARCH="x86_64" ;;
   arm64) KIWIX_ARCH="aarch64" ;;
   *) msg_error "Unsupported architecture: $ARCH"; exit 1 ;;
