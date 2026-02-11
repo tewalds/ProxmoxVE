@@ -1,13 +1,10 @@
 #!/usr/bin/env bash
 
-export GITHUB_USER="tewalds"
-export GITHUB_BRANCH="feature/kiwix"
-
-#source <(curl -fsSL https://raw.githubusercontent.com/tewalds/ProxmoxVE/feature/kiwix/misc/build.func)
+#source <(curl -fsSL https://raw.githubusercontent.com/community-scripts/ProxmoxVE/main/misc/build.func)
 source <(curl -fsSL https://raw.githubusercontent.com/tewalds/ProxmoxVE/feature/kiwix/misc/build.func)
 # Copyright (c) 2021-2026 community-scripts ORG
 # Author: tewalds
-# License: MIT | https://github.com/tewalds/ProxmoxVE/raw/main/LICENSE
+# License: MIT | https://github.com/community-scripts/ProxmoxVE/raw/main/LICENSE
 # Source: https://github.com/kiwix/kiwix-tools
 
 export LC_ALL=C  # Disable Perl locale warnings.
@@ -27,7 +24,7 @@ var_cpu="${var_cpu:-1}"                        # CPU cores: 1-4 typical
 var_ram="${var_ram:-512}"                      # RAM in MB: 512, 1024, 2048, etc.
 var_disk="${var_disk:-4}"                      # Disk in GB: 6, 8, 10, 20 typical
 var_os="${var_os:-debian}"                     # OS: debian, ubuntu, alpine
-var_version="${var_version:-12}"               # OS Version: 13 (Debian), 24.04 (Ubuntu), 3.21 (Alpine)
+var_version="${var_version:-13}"               # OS Version: 13 (Debian), 24.04 (Ubuntu), 3.21 (Alpine)
 var_unprivileged="${var_unprivileged:-1}"      # 1=unprivileged (secure), 0=privileged (for Docker/Podman)
 
 # ============================================================================
