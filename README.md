@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="https://raw.githubusercontent.com/community-scripts/ProxmoxVE/main/misc/images/logo-81x112.png" height="120px" alt="Proxmox VE Helper-Scripts Logo" />
+  <img src="https://raw.githubusercontent.com/tewalds/ProxmoxVE/feature/kiwix/misc/images/logo-81x112.png" height="120px" alt="Proxmox VE Helper-Scripts Logo" />
   
   <h1>Proxmox VE Helper-Scripts</h1>
   <p><em>A Community Legacy in Memory of @tteck</em></p>
@@ -141,7 +141,7 @@ The fastest way to get started:
 Install a convenient script manager directly in your Proxmox UI:
 
 ```bash
-bash -c "$(curl -fsSL https://raw.githubusercontent.com/community-scripts/ProxmoxVE/main/ct/pve-scripts-local.sh)"
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/tewalds/ProxmoxVE/feature/kiwix/ct/pve-scripts-local.sh)"
 ```
 
 This adds a menu to your Proxmox interface for easy script access without visiting the website.

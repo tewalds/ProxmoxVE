@@ -34,7 +34,7 @@ Your scripts contain `curl` commands that download dependencies from GitHub (bui
 
 ```bash
 # First line of ct/myapp.sh
-source <(curl -fsSL https://raw.githubusercontent.com/community-scripts/ProxmoxVE/main/misc/build.func)
+source <(curl -fsSL https://raw.githubusercontent.com/tewalds/ProxmoxVE/feature/kiwix/misc/build.func)
 ```
 
 **WITHOUT setup-fork.sh:**
@@ -54,7 +54,7 @@ source <(curl -fsSL https://raw.githubusercontent.com/community-scripts/ProxmoxV
 # Example: What setup-fork.sh changes
 
 # BEFORE (points to upstream):
-source <(curl -fsSL https://raw.githubusercontent.com/community-scripts/ProxmoxVE/main/misc/build.func)
+source <(curl -fsSL https://raw.githubusercontent.com/tewalds/ProxmoxVE/feature/kiwix/misc/build.func)
 
 # AFTER (points to your fork):
 source <(curl -fsSL https://raw.githubusercontent.com/john/ProxmoxVE/main/misc/build.func)

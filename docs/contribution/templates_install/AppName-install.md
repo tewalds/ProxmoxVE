@@ -44,7 +44,7 @@
 
 ```bash
 #!/usr/bin/env bash
-source <(curl -fsSL https://raw.githubusercontent.com/community-scripts/ProxmoxVE/main/misc/install.func)
+source <(curl -fsSL https://raw.githubusercontent.com/tewalds/ProxmoxVE/feature/kiwix/misc/install.func)
 # (setup-fork.sh modifies this URL to point to YOUR fork during development)
 ```
 

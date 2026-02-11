@@ -3,11 +3,11 @@
 export GITHUB_USER="tewalds"
 export GITHUB_BRANCH="feature/kiwix"
 
-#source <(curl -fsSL https://raw.githubusercontent.com/community-scripts/ProxmoxVE/main/misc/build.func)
+#source <(curl -fsSL https://raw.githubusercontent.com/tewalds/ProxmoxVE/feature/kiwix/misc/build.func)
 source <(curl -fsSL https://raw.githubusercontent.com/tewalds/ProxmoxVE/feature/kiwix/misc/build.func)
 # Copyright (c) 2021-2026 community-scripts ORG
 # Author: tewalds
-# License: MIT | https://github.com/community-scripts/ProxmoxVE/raw/main/LICENSE
+# License: MIT | https://github.com/tewalds/ProxmoxVE/raw/main/LICENSE
 # Source: https://github.com/kiwix/kiwix-tools
 
 export LC_ALL=C  # Disable Perl locale warnings.

@@ -346,7 +346,7 @@ for container in $CHOICE; do
   fi
 
   #2) Extract service build/update resource requirements from config/installation file
-  script=$(curl -fsSL https://raw.githubusercontent.com/community-scripts/ProxmoxVE/main/ct/${service}.sh)
+  script=$(curl -fsSL https://raw.githubusercontent.com/tewalds/ProxmoxVE/feature/kiwix/ct/${service}.sh)
 
   #2.1) Check if the script downloaded successfully
   if [ $? -ne 0 ]; then

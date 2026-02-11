@@ -75,7 +75,7 @@ Once your script is merged to the main repository, users download and run it fro
 
 ```bash
 # ✅ Users run from GitHub (normal usage after PR merged)
-bash -c "$(curl -fsSL https://raw.githubusercontent.com/community-scripts/ProxmoxVE/main/ct/myapp.sh)"
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/tewalds/ProxmoxVE/feature/kiwix/ct/myapp.sh)"
 
 # Install scripts are called by the CT script and are not run directly by users
 ```
@@ -97,7 +97,7 @@ bash -c "$(curl -fsSL https://raw.githubusercontent.com/YOUR_USERNAME/ProxmoxVE/
 
 ```bash
 # Users download the script from upstream via curl
-bash -c "$(curl -fsSL https://raw.githubusercontent.com/community-scripts/ProxmoxVE/main/ct/myapp.sh)"
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/tewalds/ProxmoxVE/feature/kiwix/ct/myapp.sh)"
 
 # The script's curl commands now point back to upstream (community-scripts)
 # This is the stable, tested version
