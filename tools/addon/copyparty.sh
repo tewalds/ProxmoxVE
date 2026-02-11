@@ -2,7 +2,7 @@
 
 # Copyright (c) 2021-2026 community-scripts ORG
 # Author: MickLesk
-# License: MIT | https://github.com/community-scripts/ProxmoxVE/raw/main/LICENSE
+# License: MIT | https://github.com/tewalds/ProxmoxVE/raw/main/LICENSE
 # Source: https://github.com/9001/copyparty
 
 if ! command -v curl &>/dev/null; then
