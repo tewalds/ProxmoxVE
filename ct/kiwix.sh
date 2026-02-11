@@ -48,46 +48,56 @@ function update_script() {
     exit
   fi
 
-  # Step 2: Check if update is available
-  if check_for_gh_release "kiwix" "kiwix/kiwix-tools"; then
+  msg_info "Checking for Updates"
+  # Detect architecture
+  ARCH=$(dpkg --print-architecture)
+  case "$ARCH" in
+    i386)  KIWIX_ARCH="i586"  ;;
+    amd64) KIWIX_ARCH="x86_64" ;;
+    arm64) KIWIX_ARCH="aarch64" ;;
+    *) msg_error "Unsupported architecture: $ARCH"; exit 1 ;;
+  esac
 
-    # Step 3: Stop services before update
-    msg_info "Stopping Service"
-    systemctl stop kiwix-serve
-    msg_ok "Stopped Service"
+  # Get current version
+  CURRENT_VER=$(/usr/local/bin/kiwix-serve --version 2>&1 | grep -oP '\d+\.\d+\.\d+' | head -1)
 
-    # Step 4: No data backup needed for Kiwix (ZIM files are external)
+  # Download and check new version
+  cd /tmp
+  DOWNLOAD_URL="https://download.kiwix.org/release/kiwix-tools/kiwix-tools_linux-${KIWIX_ARCH}.tar.gz"
+  wget -q -O kiwix-tools.tar.gz "$DOWNLOAD_URL"
+  tar -xzf kiwix-tools.tar.gz
+  KIWIX_DIR=$(find . -maxdepth 1 -type d -name "kiwix-tools_linux-${KIWIX_ARCH}*" | head -1)
+  NEW_VER=$("$KIWIX_DIR/kiwix-serve" --version 2>&1 | grep -oP '\d+\.\d+\.\d+' | head -1)
 
-    # Step 5: Download and deploy new version
-    fetch_and_deploy_gh_release "kiwix" "kiwix/kiwix-tools" "prebuild" "latest" "/tmp" "kiwix-tools_linux-x86_64-*.tar.gz"
-
-    # Step 6: Install the new binaries
-    msg_info "Installing Updated Binaries"
-    cd /tmp/kiwix-tools_linux-*
-    cp kiwix-* /usr/local/bin/
-    chmod +x /usr/local/bin/kiwix-*
-    cd /tmp
-    rm -rf kiwix-tools_linux-*
-    msg_ok "Installed Updated Binaries"
-
-    # Step 7: No data restore needed
-
-    # Step 8: Restart service with new version
-    msg_info "Starting Service"
-    systemctl start kiwix-serve
-    msg_ok "Started Service"
-    msg_ok "Updated successfully!"
+  if [[ "$CURRENT_VER" == "$NEW_VER" ]]; then
+    msg_ok "Already on latest version: $CURRENT_VER"
+    rm -rf /tmp/kiwix-tools*
+    exit
   fi
+
+  msg_info "Updating from $CURRENT_VER to $NEW_VER"
+
+  msg_info "Stopping Service"
+  systemctl stop kiwix-serve
+  msg_ok "Stopped Service"
+
+  msg_info "Installing Updated Binaries"
+  cd "$KIWIX_DIR"
+  cp kiwix-* /usr/local/bin/
+  chmod +x /usr/local/bin/kiwix-*
+  cd /tmp
+  rm -rf kiwix-tools*
+  msg_ok "Installed Updated Binaries"
+
+  msg_info "Starting Service"
+  systemctl start kiwix-serve
+  msg_ok "Started Service"
+  msg_ok "Updated successfully to version $NEW_VER!"
   exit
 }
 
 # ============================================================================
-# MAIN EXECUTION - Container creation flow
-# ============================================================================
-# These are called by build.func and handle the full installation process:
-#   1. start              - Initialize container creation
-#   2. build_container    - Execute the install script inside container
-#   3. description        - Display completion info and access details
+# MAIN EXECUTION
 # ============================================================================
 
 start
